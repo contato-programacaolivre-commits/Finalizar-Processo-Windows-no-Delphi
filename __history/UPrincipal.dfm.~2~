@@ -1,0 +1,45 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  BorderStyle = bsDialog
+  Caption = 'Programa'#231#227'o Livre - Finalizar Processos no Delphi'
+  ClientHeight = 175
+  ClientWidth = 460
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Position = poScreenCenter
+  TextHeight = 15
+  object lblStatus: TLabel
+    Left = 24
+    Top = 24
+    Width = 412
+    Height = 41
+    AutoSize = False
+    Caption = 
+      'Teste os dois m'#233'todos abaixo observando o Gerenciador de Tarefas' +
+      ' do Windows.'
+    WordWrap = True
+  end
+  object btnExcelPID: TButton
+    Left = 24
+    Top = 88
+    Width = 195
+    Height = 45
+    Caption = '1. Excel/OLE (Matar com o PID)'
+    TabOrder = 0
+    OnClick = btnExcelPIDClick
+  end
+  object btnFecharNotepad: TButton
+    Left = 241
+    Top = 88
+    Width = 195
+    Height = 45
+    Caption = '2. Fechar Notepad (.EXE)'
+    TabOrder = 1
+    OnClick = btnFecharNotepadClick
+  end
+end

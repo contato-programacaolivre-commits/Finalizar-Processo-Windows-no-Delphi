@@ -1,0 +1,70 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  BorderStyle = bsDialog
+  Caption = 'Programa'#231#227'o Livre - Finalizar Processos no Delphi'
+  ClientHeight = 235
+  ClientWidth = 460
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Position = poScreenCenter
+  TextHeight = 15
+  object lblStatus: TLabel
+    Left = 24
+    Top = 20
+    Width = 412
+    Height = 41
+    AutoSize = False
+    Caption = 
+      'Teste os m'#233'todos abaixo observando o Gerenciador de Tarefas ou t' +
+      'asklist.'
+    WordWrap = True
+  end
+  object lblPID: TLabel
+    Left = 24
+    Top = 148
+    Width = 112
+    Height = 15
+    Caption = 'Digite o PID (tasklist):'
+  end
+  object btnExcelPID: TButton
+    Left = 24
+    Top = 76
+    Width = 195
+    Height = 45
+    Caption = '1. Excel/OLE (Matar com o PID)'
+    TabOrder = 0
+    OnClick = btnExcelPIDClick
+  end
+  object btnFecharNotepad: TButton
+    Left = 241
+    Top = 76
+    Width = 195
+    Height = 45
+    Caption = '2. Fechar Notepad (.EXE)'
+    TabOrder = 1
+    OnClick = btnFecharNotepadClick
+  end
+  object edtPID: TEdit
+    Left = 24
+    Top = 169
+    Width = 195
+    Height = 23
+    NumbersOnly = True
+    TabOrder = 2
+    TextHint = 'Ex: 14820'
+  end
+  object btnFecharPorPID: TButton
+    Left = 241
+    Top = 160
+    Width = 195
+    Height = 38
+    Caption = '3. Finalizar PID Digitado'
+    TabOrder = 3
+    OnClick = btnFecharPorPIDClick
+  end
+end

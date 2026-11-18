@@ -1,0 +1,140 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, System.Win.ComObj, Winapi.TlHelp32;
+
+type
+  TfrmPrincipal = class(TForm)
+    btnExcelPID: TButton;
+    btnFecharNotepad: TButton;
+    lblStatus: TLabel;
+    procedure btnExcelPIDClick(Sender: TObject);
+    procedure btnFecharNotepadClick(Sender: TObject);
+  private
+    procedure TestarExcelComErro(ASimularFalha: Boolean);
+    function FinalizarProcessoPorNome(const ANomeExecutavel: string): Integer;
+  public
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmPrincipal.btnExcelPIDClick(Sender: TObject);
+begin
+  TestarExcelComErro(True);
+end;
+
+procedure TfrmPrincipal.btnFecharNotepadClick(Sender: TObject);
+var
+  lQtdEncerrada: Integer;
+begin
+  lQtdEncerrada := FinalizarProcessoPorNome('notepad.exe');
+  if lQtdEncerrada > 0 then
+    lblStatus.Caption := Format('Sucesso: %d processo(s) notepad.exe finalizado(s).', [lQtdEncerrada])
+  else
+    lblStatus.Caption := 'Nenhum processo notepad.exe estava aberto no momento.';
+end;
+
+procedure TfrmPrincipal.TestarExcelComErro(ASimularFalha: Boolean);
+var
+  loPlanilha: OleVariant;
+  lHWND: HWND;
+  lProcID: Cardinal;
+  lProcessHandle: THandle;
+  lSucesso: Boolean;
+begin
+  lProcID := 0;
+  lSucesso := False;
+  lblStatus.Caption := 'Abrindo Excel via OLE (deixe outra planilha sua aberta para testar)...';
+  Application.ProcessMessages;
+
+  loPlanilha := CreateOleObject('Excel.Application');
+  try
+    lHWND := loPlanilha.HWND;
+    GetWindowThreadProcessId(lHWND, lProcID);
+
+    lblStatus.Caption := Format('Excel oculto criado (PID: %d). Processando...', [lProcID]);
+    Application.ProcessMessages;
+
+    loPlanilha.Visible := False;
+    loPlanilha.DisplayAlerts := False;
+    loPlanilha.Workbooks.Add;
+    Sleep(2000);
+
+    if ASimularFalha then
+      raise Exception.Create('Erro simulado no meio da exportação!');
+
+    loPlanilha.Quit;
+    lSucesso := True;
+    lblStatus.Caption := Format('Finalizado de forma limpa (PID: %d encerrado).', [lProcID]);
+  finally
+    loPlanilha := Unassigned;
+
+    if (not lSucesso) and (lProcID > 0) then
+    begin
+      lProcessHandle := OpenProcess(PROCESS_TERMINATE, False, lProcID);
+      if lProcessHandle <> 0 then
+      begin
+        try
+          TerminateProcess(lProcessHandle, 0);
+          lblStatus.Caption := Format('Falha capturada! Apenas o PID %d foi encerrado.', [lProcID]);
+        finally
+          CloseHandle(lProcessHandle);
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TfrmPrincipal.FinalizarProcessoPorNome(const ANomeExecutavel: string): Integer;
+var
+  lSnapshot: THandle;
+  lProcessEntry: TProcessEntry32;
+  lProcessHandle: THandle;
+  lContinuar: Boolean;
+  lMeuPID: Cardinal;
+begin
+  Result := 0;
+  lMeuPID := GetCurrentProcessId;
+
+  lSnapshot := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  if lSnapshot = INVALID_HANDLE_VALUE then
+    Exit;
+
+  try
+    lProcessEntry.dwSize := SizeOf(TProcessEntry32);
+    lContinuar := Process32First(lSnapshot, lProcessEntry);
+
+    while lContinuar do
+    begin
+      if (lProcessEntry.th32ProcessID <> lMeuPID) and
+         SameText(ExtractFileName(lProcessEntry.szExeFile), ANomeExecutavel) then
+      begin
+        lProcessHandle := OpenProcess(PROCESS_TERMINATE, False, lProcessEntry.th32ProcessID);
+        if lProcessHandle <> 0 then
+        begin
+          try
+            if TerminateProcess(lProcessHandle, 0) then
+              Inc(Result);
+          finally
+            CloseHandle(lProcessHandle);
+          end;
+        end;
+      end;
+      lContinuar := Process32Next(lSnapshot, lProcessEntry);
+    end;
+  finally
+    CloseHandle(lSnapshot);
+  end;
+end;
+
+end.
+
