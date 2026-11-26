@@ -3,7 +3,7 @@
 Projeto VCL prático e compilável demonstrando como encerrar processos no Windows pelo **Delphi** de forma segura, sem vazar recursos (*Handle Leaks*) e sem derrubar arquivos que o usuário já esteja editando na máquina.
 
 > 📖 **Tutorial completo com explicação linha por linha e dicas de prevenção:**  
-> [Finalizar Processo Windows no Delphi: 3 Métodos (PID e .EXE)](https://programacaolivre.com.br)
+> [Finalizar Processo Windows no Delphi: 3 Métodos (PID e .EXE)](https://programacaolivre.com.br/finalizar-processo-windows-no-delphi/)
 
 ---
 
